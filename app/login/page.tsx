@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <AuthPageLayout gradientColors="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-100">
+    <AuthPageLayout>
       <LoginForm />
     </AuthPageLayout>
   );

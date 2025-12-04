@@ -50,7 +50,7 @@ export async function POST(
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    if (task.user_id !== user.id) {
+    if ((task as { user_id: string }).user_id !== user.id) {
       return NextResponse.json(
         { error: "Only task owner can share" },
         { status: 403 }
@@ -72,7 +72,7 @@ export async function POST(
     }
 
     // Can't share with yourself
-    if (targetUser.id === user.id) {
+    if ((targetUser as { id: string }).id === user.id) {
       return NextResponse.json(
         { error: "Cannot share task with yourself" },
         { status: 400 }
@@ -84,7 +84,7 @@ export async function POST(
       .from("task_shares")
       .select("id")
       .eq("task_id", taskId)
-      .eq("shared_with_user_id", targetUser.id)
+      .eq("shared_with_user_id", (targetUser as { id: string }).id)
       .single();
 
     if (existingShare) {
@@ -99,8 +99,9 @@ export async function POST(
       .from("task_shares")
       .insert({
         task_id: taskId,
-        shared_with_user_id: targetUser.id,
-      })
+        shared_with_user_id: (targetUser as { id: string }).id,
+        shared_by_user_id: user.id,
+      } as never)
       .select(
         `
         *,
@@ -180,7 +181,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    if (task.user_id !== user.id) {
+    if ((task as { user_id: string }).user_id !== user.id) {
       return NextResponse.json(
         { error: "Only task owner can unshare" },
         { status: 403 }

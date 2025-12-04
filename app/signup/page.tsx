@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <AuthPageLayout gradientColors="bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-100">
+    <AuthPageLayout>
       <SignupForm />
     </AuthPageLayout>
   );
