@@ -1,103 +1,113 @@
-import Image from "next/image";
+// ============================================
+// DASHBOARD HOME PAGE
+// ============================================
+// This is the main page users see after logging in
 
-export default function Home() {
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import TaskList from "@/components/tasks/TaskList";
+
+// ============================================
+// WHY is this an async function?
+// ============================================
+// Server Components in Next.js can be async
+// This lets us fetch data before rendering
+// The page waits for data, then renders with it (no loading state needed!)
+
+export default async function Home() {
+  // ============================================
+  // CHECK AUTHENTICATION
+  // ============================================
+  // Get the Supabase client for server-side
+  const supabase = await createClient();
+
+  // Get the currently logged-in user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // If no user, redirect to login
+  // (This is extra safety - middleware should already handle this)
+  if (!user) {
+    redirect("/login");
+  }
+
+  // ============================================
+  // FETCH USER PROFILE
+  // ============================================
+  // Get additional user data from profiles table
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  // ============================================
+  // RENDER THE PAGE
+  // ============================================
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <DashboardLayout userEmail={user.email || ""}>
+      {/* Main task management UI */}
+      <TaskList userId={user.id} />
+    </DashboardLayout>
   );
 }
+
+// ============================================
+// KEY CONCEPTS EXPLAINED:
+// ============================================
+//
+// 1. SERVER COMPONENT DATA FETCHING:
+//    - async function: Can use await
+//    - Fetches data on the server before rendering
+//    - No loading spinners needed (page waits for data)
+//    - SEO-friendly (content in initial HTML)
+//
+// 2. AUTHENTICATION CHECK:
+//    - supabase.auth.getUser(): Gets current user from cookie
+//    - if (!user): Extra safety check
+//    - redirect(): Server-side redirect function
+//
+// 3. DATABASE QUERY:
+//    - .from('profiles'): Query the profiles table
+//    - .select('*'): Get all columns
+//    - .eq('id', user.id): WHERE id = user.id
+//    - .single(): Expect exactly one row
+//
+// 4. OPTIONAL CHAINING:
+//    - profile?.full_name: Access property safely
+//    - If profile is null, returns undefined (no error)
+//    - || 'User': Fallback if undefined
+//
+// 5. SERVER vs CLIENT COMPONENTS:
+//    - This page: Server Component (default)
+//    - Navbar: Client Component ('use client')
+//    - Can mix both in same page!
+//    - Server fetches data, passes to Client via props
+//
+// 6. REDIRECT vs ROUTER.PUSH:
+//    - redirect(): Server-side (in Server Components)
+//    - router.push(): Client-side (in Client Components)
+//    - Use the right one for your context
+//
+// 7. PROPS PASSING:
+//    - <Navbar userEmail={user.email || ''} />
+//    - Pass data from Server to Client Component
+//    - Props must be serializable (no functions!)
+//
+// ============================================
+// WHY FETCH DATA HERE INSTEAD OF CLIENT?
+// ============================================
+//
+// Benefits of Server-side data fetching:
+// ✓ Faster - No round trip from browser to server
+// ✓ Secure - Database credentials never sent to browser
+// ✓ SEO - Content in HTML (search engines can index it)
+// ✓ Less JavaScript - Smaller bundle size for browser
+//
+// When to use client-side instead:
+// - Real-time updates (WebSockets)
+// - User interactions trigger fetch
+// - Need loading/error UI states
+// - Optimistic UI updates

@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode */
+@variant dark (&:is(.dark, .dark *));
+
+/* ============================================
+   LIGHT MODE COLORS - Clean & Vibrant
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 9%;
+
+  /* Beautiful vibrant blue */
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Rich purple */
+  --secondary: 262 83% 58%;
+  --secondary-foreground: 0 0% 100%;
+
+  /* Soft neutral backgrounds */
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+
+  /* Vibrant pink accent */
+  --accent: 330 85% 65%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Bright red for actions */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 217 91% 60%;
+
+  --radius: 0.75rem;
 }
 
+/* ============================================
+   DARK MODE COLORS - Pure Gray-Black
+   ============================================ */
+.dark {
+  /* Pure gray-black background - no color tint */
+  --background: 0 0% 9%;
+  --foreground: 0 0% 97%;
+
+  /* Elevated cards - pure gray */
+  --card: 0 0% 13%;
+  --card-foreground: 0 0% 97%;
+
+  /* Popovers with extra elevation */
+  --popover: 0 0% 15%;
+  --popover-foreground: 0 0% 97%;
+
+  /* Vivid electric blue */
+  --primary: 217 91% 68%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Rich neon purple */
+  --secondary: 262 83% 72%;
+  --secondary-foreground: 0 0% 100%;
+
+  /* Pure gray muted backgrounds */
+  --muted: 0 0% 17%;
+  --muted-foreground: 0 0% 68%;
+
+  /* Pure gray accent backgrounds */
+  --accent: 0 0% 20%;
+  --accent-foreground: 0 0% 97%;
+
+  /* Bright coral-red */
+  --destructive: 0 84% 68%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Pure gray borders */
+  --border: 0 0% 22%;
+  --input: 0 0% 20%;
+  --ring: 217 91% 68%;
+
+  --radius: 0.75rem;
+}
+
+/* ============================================
+   TAILWIND THEME CONFIGURATION
+   ============================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-md: var(--radius);
+  --radius-sm: calc(var(--radius) - 2px);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   BASE STYLES - Vibrant & Beautiful
+   ============================================ */
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Subtle gradient overlay for visual interest */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 0;
 }
+
+.dark body::before {
+  background: transparent;
+}
+
+/* Ensure content is above gradient */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Better text rendering for dark mode */
+.dark {
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
+/* Note: Individual components handle their own transitions
+   to avoid flash on page load. Global transition removed. */
+
+/* ============================================
+   KEY CONCEPTS:
+   ============================================
+   
+   1. CSS VARIABLES (Custom Properties):
+      - Defined with --variable-name
+      - Used with var(--variable-name)
+      - Can be changed dynamically
+      - Inherited by child elements
+   
+   2. :root vs .dark:
+      - :root applies to <html> element
+      - .dark applies when <html class="dark">
+      - We toggle the class with JavaScript
+   
+   3. COLOR CONTRAST:
+      - Dark mode colors are lighter (better contrast on dark bg)
+      - Light mode colors are darker (better contrast on light bg)
+      - Always test readability!
+   
+   4. TRANSITIONS:
+      - Smooth color changes when switching themes
+      - 200ms is fast enough to feel instant
+      - ease-in-out makes it feel natural
+   
+   5. @theme inline:
+      - Tailwind v4 feature
+      - Makes CSS variables available as Tailwind classes
+      - Can use: bg-primary, text-secondary, etc.
+   ============================================ */
