@@ -126,7 +126,7 @@ export async function PATCH(
       .eq("id", taskId)
       .single();
 
-    if (!task || task.user_id !== user.id) {
+    if (!task || (task as { user_id: string }).user_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - Only owner can update task" },
         { status: 403 }
@@ -214,7 +214,7 @@ export async function DELETE(
       .eq("id", taskId)
       .single();
 
-    if (!task || task.user_id !== user.id) {
+    if (!task || (task as { user_id: string }).user_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - Only owner can delete task" },
         { status: 403 }
