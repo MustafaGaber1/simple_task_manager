@@ -10,12 +10,10 @@ import { CheckSquare } from "lucide-react";
 
 interface AuthPageLayoutProps {
   children: React.ReactNode;
-  gradientColors: string;
 }
 
 export default function AuthPageLayout({
   children,
-  gradientColors,
 }: AuthPageLayoutProps) {
   return (
     <div className="min-h-screen flex transition-colors relative">

@@ -11,7 +11,13 @@ import { TaskUpdate } from "@/types/database";
 // ============================================
 // HELPER: Check if user owns or has access to task
 // ============================================
-async function canAccessTask(supabase: any, taskId: string, userId: string) {
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+interface TaskShare {
+  shared_with_user_id: string;
+}
+
+async function canAccessTask(supabase: SupabaseClient, taskId: string, userId: string) {
   const { data: task } = await supabase
     .from("tasks")
     .select("user_id, task_shares(shared_with_user_id)")
@@ -23,7 +29,7 @@ async function canAccessTask(supabase: any, taskId: string, userId: string) {
   // User is owner OR task is shared with them
   const isOwner = task.user_id === userId;
   const isShared = task.task_shares?.some(
-    (share: any) => share.shared_with_user_id === userId
+    (share: TaskShare) => share.shared_with_user_id === userId
   );
 
   return isOwner || isShared;
@@ -120,7 +126,7 @@ export async function PATCH(
       .eq("id", taskId)
       .single();
 
-    if (!task || (task as any).user_id !== user.id) {
+    if (!task || task.user_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - Only owner can update task" },
         { status: 403 }
@@ -208,7 +214,7 @@ export async function DELETE(
       .eq("id", taskId)
       .single();
 
-    if (!task || (task as any).user_id !== user.id) {
+    if (!task || task.user_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - Only owner can delete task" },
         { status: 403 }

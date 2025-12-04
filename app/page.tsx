@@ -34,16 +34,6 @@ export default async function Home() {
   }
 
   // ============================================
-  // FETCH USER PROFILE
-  // ============================================
-  // Get additional user data from profiles table
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  // ============================================
   // RENDER THE PAGE
   // ============================================
   return (

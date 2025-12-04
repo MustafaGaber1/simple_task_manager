@@ -88,7 +88,7 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options);
             });
-          } catch (error) {
+          } catch {
             // This can fail in Server Components during initial render
             // It's safe to ignore because the cookies will be set on the next request
             // This is a known Next.js limitation with Server Components
@@ -155,6 +155,7 @@ export async function createClient() {
 //   'use client'
 //   const supabase = createClient() // CLIENT
 //   const handleClick = () => supabase.from('tasks').insert({...})
+
 
 
 

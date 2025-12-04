@@ -11,7 +11,7 @@ import { TaskInsert } from "@/types/database";
 // ============================================
 // GET /api/tasks - Fetch all tasks for current user
 // ============================================
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Create Supabase client for server-side operations
     const supabase = await createClient();
